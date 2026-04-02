@@ -8,8 +8,9 @@ public abstract class PipelineBase<T> {
 
     protected final List<IFilter<T>> filters = new ArrayList<>();
 
-    public void addFilter(IFilter<T> filter) {
+    public PipelineBase<T> addFilter(IFilter<T> filter) {
         filters.add(filter);
+        return this;
     }
 
     public T execute(T message) {
