@@ -13,6 +13,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PipelineArchitectureSpringBootApplication implements CommandLineRunner {
 
+	private static final String SEPARATOR = "============================================================";
+
 	public static void main(String[] args) {
 		SpringApplication.run(PipelineArchitectureSpringBootApplication.class, args);
 	}
@@ -27,18 +29,19 @@ public class PipelineArchitectureSpringBootApplication implements CommandLineRun
 
 		Message message = new Message("{\"source\": \"ERP_SYSTEM\", \"batchId\": \"BATCH-2024-001\"}");
 
-		System.out.println("============================================================");
+		System.out.println(SEPARATOR);
 		System.out.println("   PIPELINE ARCHITECTURE DEMO");
-		System.out.println("============================================================");
+		System.out.println(SEPARATOR);
 		System.out.println("[DATA SOURCE] Created message: " + message.getRawData());
 		System.out.println("[PIPELINE] Starting execution...");
-		System.out.println("============================================================");
+		System.out.println(SEPARATOR);
 		
 		Message result = pipeline.execute(message);
 
+		System.out.println(SEPARATOR);
 		System.out.println("[CONSUMER] Pipeline completed!");
 		System.out.println("[CONSUMER] Final result: " + result.getInvoiceInfo());
-		System.out.println("============================================================");
+		System.out.println(SEPARATOR);
 	}
 
 }

@@ -8,9 +8,13 @@ import java.util.List;
 
 public class NoteReader implements IFilter<Message> {
 
+	private static final String SEPARATOR = "------------------------------------------------------------";
+
     @Override
     public Message filter(Message message) {
-        System.out.println("[NoteReader] Processing notes from: " + message.getRawData());
+		System.out.println(SEPARATOR);
+		System.out.println("[STEP 3/4] NoteReader");
+		System.out.println("[NoteReader] Processing notes from: " + message.getRawData());
 
         List<Note> notes = List.of(
                 new Note("Invoice verified"),

@@ -8,9 +8,13 @@ import java.util.List;
 
 public class PaymentReader implements IFilter<Message> {
 
+	private static final String SEPARATOR = "------------------------------------------------------------";
+
     @Override
     public Message filter(Message message) {
-        System.out.println("[PaymentReader] Processing payments from: " + message.getRawData());
+		System.out.println(SEPARATOR);
+		System.out.println("[STEP 2/4] PaymentReader");
+		System.out.println("[PaymentReader] Processing payments from: " + message.getRawData());
 
         List<Payment> payments = List.of(
                 new Payment("PAY-001", "BANK_TRANSFER", new BigDecimal("3000.00")),
