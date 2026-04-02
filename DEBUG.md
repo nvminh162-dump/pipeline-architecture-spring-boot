@@ -164,7 +164,147 @@ System.out.println("[CONSUMER] Final result: " + result.getInvoiceInfo());
 
 ta thấy toàn bộ dữ liệu tổng hợp từ 4 bước xử lý.
 
-## 5. Tư duy kiến trúc
+## 5. Giải thích output thực tế
+
+Output bạn thấy trong terminal là kết quả của 3 lớp thông tin khác nhau:
+
+1. Phần mở đầu của app
+2. Phần log từng filter
+3. Phần kết quả tổng hợp cuối cùng
+
+### 5.1. Phần mở đầu
+
+```text
+============================================================
+	PIPELINE ARCHITECTURE DEMO
+============================================================
+[DATA SOURCE] Created message: {"source": "ERP_SYSTEM", "batchId": "BATCH-2024-001"}
+[PIPELINE] Starting execution...
+============================================================
+```
+
+Ý nghĩa:
+
+- Dòng đầu và dòng cuối là separator để tách khối log lớn.
+- `PIPELINE ARCHITECTURE DEMO` là tiêu đề chung của app.
+- `[DATA SOURCE] Created message: ...` cho biết `Message` đầu vào đã được tạo.
+- `[PIPELINE] Starting execution...` báo rằng pipeline sắp bắt đầu chạy.
+
+### 5.2. Separator trước từng bước
+
+```text
+------------------------------------------------------------
+```
+
+Dòng này xuất hiện trước mỗi filter để bạn nhìn ra ranh giới giữa các process.
+
+Nó không mang dữ liệu nghiệp vụ, chỉ là dấu phân cách để log dễ đọc hơn.
+
+### 5.3. Dòng `[STEP x/4]`
+
+Ví dụ:
+
+```text
+[STEP 1/4] InvoiceReader
+```
+
+Ý nghĩa:
+
+- `STEP 1/4` nghĩa là đây là bước đầu tiên trong tổng 4 bước.
+- `InvoiceReader` là tên filter đang chạy.
+
+Mục đích của dòng này là giúp bạn biết chính xác pipeline đang đứng ở đâu.
+
+### 5.4. Dòng `Processing ... from ...`
+
+Ví dụ:
+
+```text
+[InvoiceReader] Processing invoices from: {"source": "ERP_SYSTEM", "batchId": "BATCH-2024-001"}
+```
+
+Ý nghĩa:
+
+- Filter đang nhận cùng một `Message` đầu vào.
+- Nó đọc `rawData` từ `Message`.
+- Dữ liệu gốc này được dùng làm nguồn để filter xử lý.
+
+Điểm quan trọng:
+
+- Tất cả filter đều nhận chung một `Message`.
+- Nhưng mỗi filter chỉ bổ sung một phần riêng vào `invoiceInfo`.
+
+### 5.5. Dòng `Found ...`
+
+Ví dụ:
+
+```text
+[InvoiceReader] Found 2 invoices
+```
+
+Ý nghĩa:
+
+- Filter vừa tạo xong dữ liệu mẫu.
+- Con số phía sau cho biết số lượng object đã được thêm vào `InvoiceInfo`.
+
+Tương tự:
+
+- `InvoiceReader` thêm `invoices`
+- `PaymentReader` thêm `payments`
+- `NoteReader` thêm `notes`
+- `CreditNoteReader` thêm `creditNotes`
+
+### 5.6. Dòng kết thúc khối step
+
+Ở bước cuối có thêm separator sau log:
+
+```text
+------------------------------------------------------------
+```
+
+Dòng này đánh dấu filter cuối đã chạy xong.
+
+### 5.7. Phần consumer
+
+```text
+[CONSUMER] Pipeline completed!
+[CONSUMER] Final result: InvoiceInfo(...)
+============================================================
+```
+
+Ý nghĩa:
+
+- `Pipeline completed!` nghĩa là toàn bộ filter đã chạy xong.
+- `Final result:` là dữ liệu cuối cùng sau khi pipeline xử lý.
+- `InvoiceInfo(...)` chính là kết quả tổng hợp từ tất cả các step.
+
+## 6. Đọc output theo thứ tự nào
+
+Bạn có thể đọc console theo công thức sau:
+
+```text
+Header
+→ data source
+→ start pipeline
+→ step 1
+→ step 2
+→ step 3
+→ step 4
+→ consumer output
+```
+
+Nếu map vào dữ liệu thật:
+
+```text
+Message đầu vào
+→ InvoiceReader thêm invoices
+→ PaymentReader thêm payments
+→ NoteReader thêm notes
+→ CreditNoteReader thêm creditNotes
+→ InvoiceInfo hoàn chỉnh
+```
+
+## 7. Tư duy kiến trúc
 
 Pipeline này chạy theo kiểu:
 
@@ -179,7 +319,7 @@ Producer → Pipeline → Filter 1 → Filter 2 → Filter 3 → Filter 4 → Co
 - `Filter`: xử lý từng phần dữ liệu
 - `Consumer`: nhận kết quả cuối và hiển thị
 
-## 6. Điều cần nhớ khi debug
+## 8. Điều cần nhớ khi debug
 
 1. `PipelineBase` không biết business logic.
 2. Mỗi filter chỉ làm một việc.
@@ -187,7 +327,7 @@ Producer → Pipeline → Filter 1 → Filter 2 → Filter 3 → Filter 4 → Co
 4. Thứ tự `addFilter(...)` quyết định thứ tự chạy.
 5. Nếu đổi thứ tự filter, output cũng đổi theo.
 
-## 7. Nếu muốn debug thực tế hơn
+## 9. Nếu muốn debug thực tế hơn
 
 Bạn có thể đặt breakpoint ở 4 chỗ này:
 
