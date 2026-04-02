@@ -1,17 +1,13 @@
 package com.nvminh.pipeline.core.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
+
+@Getter
+@ToString
+@AllArgsConstructor
 public class Note {
 
 	private final String content;
-
-	public Note(String content) {
-		this.content = content;
-	}
-
-	@Override
-	public String toString() {
-		return "Note{" +
-				"content='" + content + '\'' +
-				'}';
-	}
 }

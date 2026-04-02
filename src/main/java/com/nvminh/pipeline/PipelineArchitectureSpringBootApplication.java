@@ -32,7 +32,8 @@ public class PipelineArchitectureSpringBootApplication implements CommandLineRun
 		System.out.println("============================================================");
 		System.out.println("[DATA SOURCE] Created message: " + message.getRawData());
 		System.out.println("[PIPELINE] Starting execution...");
-
+		System.out.println("============================================================");
+		
 		Message result = pipeline.execute(message);
 
 		System.out.println("[CONSUMER] Pipeline completed!");
